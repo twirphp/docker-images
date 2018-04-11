@@ -11,7 +11,7 @@ RUN set -xe \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y --no-install-recommends git zip unzip zlib1g-dev wget \
-    && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath \
+    && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
 ENV GOLANG_VERSION 1.10.1
@@ -32,12 +32,10 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 WORKDIR $GOPATH
 
 # Install Composer
+COPY composer-installer.sh .
 RUN set -xe \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('composer-setup.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    && php composer-setup.php \
-    && php -r "unlink('composer-setup.php');"
+    && ./composer-installer.sh \
+    && rm composer-installer.sh
 
 # Install dep
 RUN INSTALL_DIRECTORY=/usr/bin wget -qO- https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
