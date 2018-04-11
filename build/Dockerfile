@@ -58,3 +58,7 @@ RUN set -xe \
     && wget -O /tmp/protoc/protoc.zip https://github.com/google/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
     && unzip /tmp/protoc/protoc.zip -d /usr/local -x readme.txt \
     && rm -rf /tmp/protoc
+
+# Install client compatibility test suite
+# TODO: install a specific commit/version
+RUN go get github.com/twitchtv/twirp/clientcompat
