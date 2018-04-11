@@ -14,14 +14,6 @@ RUN set -xe \
     && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath \
     && rm -rf /var/lib/apt/lists/*
 
-RUN set -xe \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('composer-setup.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    && php composer-setup.php \
-    && php -r "unlink('composer-setup.php');"
-
-
 ENV GOLANG_VERSION 1.10.1
 ENV GOLANG_SHA256SUM 72d820dec546752e5a8303b33b009079c15c2390ce76d67cf514991646c6127b
 
@@ -38,3 +30,33 @@ RUN go version
 
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 WORKDIR $GOPATH
+
+# Install Composer
+RUN set -xe \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');" \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('composer-setup.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php \
+    && php -r "unlink('composer-setup.php');"
+
+# Install dep
+RUN INSTALL_DIRECTORY=/usr/bin wget -qO- https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+# Install packr
+ENV PACKR_VERSION 1.10.11
+
+RUN set -xe \
+    && mkdir -p /tmp/packr \
+    && wget -O /tmp/packr/packr.tar.gz https://github.com/gobuffalo/packr/releases/download/v${PACKR_VERSION}/packr_${PACKR_VERSION}_linux_amd64.tar.gz \
+    && tar -C /tmp/packr -xzf /tmp/packr/packr.tar.gz \
+    && mv /tmp/packr/packr /usr/bin \
+    && rm -rf /tmp/packr
+
+# Install protoc
+ENV PROTOC_VERSION 3.5.1
+
+RUN set -xe \
+    && mkdir -p /tmp/protoc \
+    && wget -O /tmp/protoc/protoc.zip https://github.com/google/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip \
+    && unzip /tmp/protoc/protoc.zip -d /usr/local -x readme.txt \
+    && rm -rf /tmp/protoc
