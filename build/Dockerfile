@@ -59,6 +59,16 @@ RUN set -xe \
     && unzip /tmp/protoc/protoc.zip -d /usr/local -x readme.txt \
     && rm -rf /tmp/protoc
 
+# Install goreleaser
+ENV GORELEASER_VERSION 0.66.1
+
+RUN set -xe \
+    && mkdir -p /tmp/goreleaser \
+    && wget -O /tmp/goreleaser/goreleaser.tar.gz https://github.com/goreleaser/goreleaser/releases/download/v${GORELEASER_VERSION}/goreleaser_Linux_x86_64.tar.gz \
+    && tar -C /tmp/goreleaser -xzf /tmp/goreleaser/goreleaser.tar.gz \
+    && mv /tmp/goreleaser/goreleaser /usr/bin \
+    && rm -rf /tmp/goreleaser
+
 # Install client compatibility test suite
 # TODO: install a specific commit/version
 RUN go get github.com/twitchtv/twirp/clientcompat
