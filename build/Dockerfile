@@ -14,6 +14,14 @@ RUN set -xe \
     && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath \
     && rm -rf /var/lib/apt/lists/*
 
+RUN set -xe \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');" \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('composer-setup.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php \
+    && php -r "unlink('composer-setup.php');"
+
+
 ENV GOLANG_VERSION 1.10.1
 ENV GOLANG_SHA256SUM 72d820dec546752e5a8303b33b009079c15c2390ce76d67cf514991646c6127b
 
