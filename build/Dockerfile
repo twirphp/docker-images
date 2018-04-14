@@ -10,7 +10,7 @@ RUN set -xe \
     && apt-get install -y --no-install-recommends python-software-properties software-properties-common \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
-    && apt-get install -y --no-install-recommends git zip unzip zlib1g-dev wget \
+    && apt-get install -y --no-install-recommends git ssh zip unzip zlib1g-dev wget \
     && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
