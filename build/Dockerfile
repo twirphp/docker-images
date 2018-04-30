@@ -40,16 +40,6 @@ RUN set -xe \
 # Install dep
 RUN INSTALL_DIRECTORY=/usr/bin wget -qO- https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
-# Install packr
-ENV PACKR_VERSION 1.10.11
-
-RUN set -xe \
-    && mkdir -p /tmp/packr \
-    && wget -O /tmp/packr/packr.tar.gz https://github.com/gobuffalo/packr/releases/download/v${PACKR_VERSION}/packr_${PACKR_VERSION}_linux_amd64.tar.gz \
-    && tar -C /tmp/packr -xzf /tmp/packr/packr.tar.gz \
-    && mv /tmp/packr/packr /usr/bin \
-    && rm -rf /tmp/packr
-
 # Install protoc
 ENV PROTOC_VERSION 3.5.1
 
