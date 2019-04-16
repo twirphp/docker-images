@@ -1,21 +1,24 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 # see https://askubuntu.com/a/705893/168529
 ENV LC_ALL C.UTF-8
 
-ENV PHP_VERSION 7.2
+ENV PHP_VERSION 7.3
 
 RUN set -xe \
+    && export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    && echo "tzdata tzdata/Areas select Europe" | debconf-set-selections \
+    && echo "tzdata tzdata/Zones/Europe select Budapest" | debconf-set-selections \
     && apt-get update \
-    && apt-get install -y --no-install-recommends python-software-properties software-properties-common \
+    && apt-get install -y --no-install-recommends software-properties-common \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y --no-install-recommends git ssh zip unzip zlib1g-dev wget \
     && apt-get install -y --no-install-recommends php${PHP_VERSION}-cli php${PHP_VERSION}-bcmath php${PHP_VERSION}-xml php${PHP_VERSION}-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
-ENV GOLANG_VERSION 1.10.1
-ENV GOLANG_SHA256SUM 72d820dec546752e5a8303b33b009079c15c2390ce76d67cf514991646c6127b
+ENV GOLANG_VERSION 1.12.4
+ENV GOLANG_SHA256SUM d7d1f1f88ddfe55840712dc1747f37a790cbcaa448f6c9cf51bbe10aa65442f5
 
 RUN set -xe \
     && wget -O go.tar.gz https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz \
@@ -37,11 +40,8 @@ RUN set -xe \
     && ./composer-installer.sh \
     && rm composer-installer.sh
 
-# Install dep
-RUN INSTALL_DIRECTORY=/usr/bin wget -qO- https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
 # Install protoc
-ENV PROTOC_VERSION 3.5.1
+ENV PROTOC_VERSION 3.7.1
 
 RUN set -xe \
     && mkdir -p /tmp/protoc \
@@ -50,7 +50,7 @@ RUN set -xe \
     && rm -rf /tmp/protoc
 
 # Install goreleaser
-ENV GORELEASER_VERSION 0.66.1
+ENV GORELEASER_VERSION 0.105.0
 
 RUN set -xe \
     && mkdir -p /tmp/goreleaser \
